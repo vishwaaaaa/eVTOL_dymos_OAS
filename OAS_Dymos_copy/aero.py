@@ -27,13 +27,13 @@ class AeroForce(om.Group):
         nn = self.options['num_nodes']
 
         self.add_subsystem(name='CL_comp', subsys=CLComp(num_nodes=nn),
-                           promotes_inputs=['aoa'], promotes_outputs=['CL'])
+                           promotes_inputs=['alpha'], promotes_outputs=['CL'])
 
         self.add_subsystem(name='CD_comp', subsys=CDComp(num_nodes=nn),
                            promotes_inputs=['CL'], promotes_outputs=['CD'])
 
         self.add_subsystem(name='q_comp', subsys=DynamicPressureComp(num_nodes=nn),
-                           promotes_inputs=['rho', 'vx','vy'], promotes_outputs=['q'])
+                           promotes_inputs=['rho','v'], promotes_outputs=['q'])
 
         self.add_subsystem(name='lift_drag_force_comp', subsys=LiftDragForceComp(num_nodes=nn),
                            promotes_inputs=['CL', 'CD', 'q', 'S'],
@@ -48,15 +48,15 @@ class CLComp(om.ExplicitComponent):
 
     def setup(self):
         nn = self.options['num_nodes']
-        self.add_input('aoa', shape=(nn,), desc='angle of attck', units='deg')
+        self.add_input('alpha', shape=(nn,), desc='angle of attck', units='deg')
         self.add_output(name='CL', val=np.ones(nn), desc='lift coefficient', units=None)
-        self.declare_partials(of='CL', wrt='aoa', rows=np.arange(nn), cols=np.arange(nn))
+        self.declare_partials(of='CL', wrt='alpha', rows=np.arange(nn), cols=np.arange(nn))
 
     def compute(self, inputs, outputs):
-        outputs['CL'] = self._Cl_alpha * inputs['aoa']
+        outputs['CL'] = self._Cl_alpha * inputs['alpha']
 
     def compute_partials(self, inputs, partials):
-        partials['CL', 'aoa'] = self._Cl_alpha
+        partials['CL', 'alpha'] = self._Cl_alpha
 
 
 class CDComp(om.ExplicitComponent):
@@ -87,21 +87,21 @@ class DynamicPressureComp(om.ExplicitComponent):
     def setup(self):
         nn = self.options['num_nodes']
         self.add_input(name='rho', val=0.5 * np.ones(nn), desc='atmospheric density', units='kg/m**3')
-        self.add_input(name='vx', shape=(nn,), desc='air-relative velocity', units='m/s')
-        self.add_input(name='vy', shape=(nn,), desc='air-relative velocity', units='m/s')
+        self.add_input(name='v', shape=(nn,), desc='air-relative velocity', units='m/s')
+        #self.add_input(name='vy', shape=(nn,), desc='air-relative velocity', units='m/s')
         self.add_output(name='q', shape=(nn,), desc='dynamic pressure', units='N/m**2')
         ar = np.arange(nn)
         self.declare_partials(of='q', wrt='rho', rows=ar, cols=ar)
-        self.declare_partials(of='q', wrt='vx', rows=ar, cols=ar)
-        self.declare_partials(of='q', wrt='vy', rows=ar, cols=ar)
+        self.declare_partials(of='q', wrt='v', rows=ar, cols=ar)
+        #self.declare_partials(of='q', wrt='vy', rows=ar, cols=ar)
 
     def compute(self, inputs, outputs):
-        outputs['q'] = 0.5 * inputs['rho'] * (inputs['vx']**2 + inputs['vy']**2) 
+        outputs['q'] = 0.5 * inputs['rho'] * inputs['v']**2
 
     def compute_partials(self, inputs, partials):
-        partials['q', 'rho'] = 0.5 * (inputs['vx']**2 + inputs['vy'] ** 2) #inputs['v'] ** 2
-        partials['q', 'vx'] = inputs['rho'] * input['vx']#inputs['v']
-        partials['q', 'vy'] = inputs['rho'] * input['vy']
+        partials['q', 'rho'] = 0.5 * inputs['v']**2  #inputs['v'] ** 2
+        partials['q', 'v'] = inputs['rho'] * inputs['v']#inputs['v']
+        #partials['q', 'vy'] = inputs['rho'] * input['vy']
 
 
 class LiftDragForceComp(om.ExplicitComponent):

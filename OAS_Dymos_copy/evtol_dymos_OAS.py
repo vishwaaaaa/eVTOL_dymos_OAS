@@ -306,5 +306,5 @@ if __name__ == '__main__':
 
     p.set_val('traj.phase1.controls:power', 200000.0)
     p.set_val('traj.phase1.controls:theta', phase1.interpolate(ys=[np.radians(85), np.radians(90)], nodes='control_input'))
-    #dm.run_problem(p, run_driver=True, simulate=True)
+    dm.run_problem(p, run_driver=True, simulate=True)
     om.n2(p)
