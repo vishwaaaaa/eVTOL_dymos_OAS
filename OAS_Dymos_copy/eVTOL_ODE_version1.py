@@ -79,7 +79,7 @@ class eVTOL2DODE(om.Group):
         # outputs: f_lift, f_drag
         if self.options['aero_model'] == "simple":
             # use simple aero model (linear CL slope & polar drag)
-            self.add_subsystem(name='aero', subsys=AeroForce(num_nodes=nn), promotes_inputs=['vx','vy', 'aoa', ('S', 'Sref')])
+            self.add_subsystem(name='aero', subsys=AeroForce(num_nodes=nn), promotes_inputs=['v', 'alpha', ('S', 'Sref')])
         
         else:
             raise RuntimeError('Option `aero_model` must be `simple`')
