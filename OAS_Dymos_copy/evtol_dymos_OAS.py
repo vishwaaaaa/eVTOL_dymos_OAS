@@ -152,46 +152,46 @@ if __name__ == '__main__':
     traj = dm.Trajectory()
     p.model.add_subsystem('traj', traj)
 
-    phase = dm.Phase(transcription=dm.GaussLobatto(num_segments=10, order=3, solve_segments=False,
-                                                   compressed=False),
-                     ode_class=Dynamics,
-                     ode_init_kwargs={'input_dict': input_dict})  ##the vectorized dynamics
+    # phase = dm.Phase(transcription=dm.GaussLobatto(num_segments=10, order=3, solve_segments=False,
+    #                                                compressed=False),
+    #                  ode_class=Dynamics,
+    #                  ode_init_kwargs={'input_dict': input_dict})  ##the vectorized dynamics
 
-    traj.add_phase('phase0', phase)
+    # traj.add_phase('phase0', phase)
 
-    phase.set_time_options(fix_initial=True, duration_bounds=(5, 60), duration_ref=30)
-    phase.add_state('x', fix_initial=True, rate_source='x_dot', ref0=0, ref=900, defect_ref=100)
-    phase.add_state('y', fix_initial=True, rate_source='y_dot', ref0=0, ref=300, defect_ref=300)
-    phase.add_state('vx', fix_initial=True, rate_source='a_x', ref0=0, ref=10)
-    phase.add_state('vy', fix_initial=True, rate_source='a_y', ref0=0, ref=10)
-    phase.add_state('energy', fix_initial=True, rate_source='energy_dot', ref0=0, ref=1E7, defect_ref=1E5)
+    # phase.set_time_options(fix_initial=True, duration_bounds=(5, 60), duration_ref=30)
+    # phase.add_state('x', fix_initial=True, rate_source='x_dot', ref0=0, ref=900, defect_ref=100)
+    # phase.add_state('y', fix_initial=True, rate_source='y_dot', ref0=0, ref=300, defect_ref=300)
+    # phase.add_state('vx', fix_initial=True, rate_source='a_x', ref0=0, ref=10)
+    # phase.add_state('vy', fix_initial=True, rate_source='a_y', ref0=0, ref=10)
+    # phase.add_state('energy', fix_initial=True, rate_source='energy_dot', ref0=0, ref=1E7, defect_ref=1E5)
 
-    phase.add_control('power', lower=1e3, upper=311000, ref0=1e3, ref=311000, rate_continuity=False)
-    phase.add_control('theta', lower=0., upper=3 * np.pi / 4, ref0=0, ref=3 * np.pi / 4,
-                      rate_continuity=False)
+    # phase.add_control('power', lower=1e3, upper=311000, ref0=1e3, ref=311000, rate_continuity=False)
+    # phase.add_control('theta', lower=0., upper=3 * np.pi / 4, ref0=0, ref=3 * np.pi / 4,
+    #                   rate_continuity=False)
 
-    phase.add_timeseries_output(['CL', 'CD'])
+    # phase.add_timeseries_output(['CL', 'CD'])
 
-    # Objective
-    # phase.add_objective('energy', loc='final', ref0=0, ref=1E7)
+    # # Objective
+    # # phase.add_objective('energy', loc='final', ref0=0, ref=1E7)
 
-    # Boundary Constraints
-    phase.add_boundary_constraint('y', loc='final', lower=305,
-                                  ref=100)  # Constraint for the final vertical displacement
-    phase.add_boundary_constraint('x', loc='final', equals=900,
-                                  ref=100)  # Constraint for the final horizontal displacement
-    phase.add_boundary_constraint('x_dot', loc='final', equals=67.,
-                                  ref=100)  # Constraint for the final horizontal speed
+    # # Boundary Constraints
+    # phase.add_boundary_constraint('y', loc='final', lower=305,
+    #                               ref=100)  # Constraint for the final vertical displacement
+    # phase.add_boundary_constraint('x', loc='final', equals=900,
+    #                               ref=100)  # Constraint for the final horizontal displacement
+    # phase.add_boundary_constraint('x_dot', loc='final', equals=67.,
+    #                               ref=100)  # Constraint for the final horizontal speed
 
-    # Path Constraints
-    phase.add_path_constraint('y', lower=0., upper=305,
-                              ref=300)  # Constraint for the minimum vertical displacement
-    phase.add_path_constraint('acc', upper=0.3,
-                              ref=1.0)  # Constraint for the acceleration magnitude
-    phase.add_path_constraint('aoa', lower=-np.radians(15), upper=np.radians(15), ref0=-np.radians(15),
-                              ref=np.radians(15))  # Constraint for the angle of attack
-    phase.add_path_constraint('thrust', lower=10, ref0=10,
-                              ref=100)  # Constraint for the thrust magnitude
+    # # Path Constraints
+    # phase.add_path_constraint('y', lower=0., upper=305,
+    #                           ref=300)  # Constraint for the minimum vertical displacement
+    # phase.add_path_constraint('acc', upper=0.3,
+    #                           ref=1.0)  # Constraint for the acceleration magnitude
+    # phase.add_path_constraint('aoa', lower=-np.radians(15), upper=np.radians(15), ref0=-np.radians(15),
+    #                           ref=np.radians(15))  # Constraint for the angle of attack
+    # phase.add_path_constraint('thrust', lower=10, ref0=10,
+    #                           ref=100)  # Constraint for the thrust magnitude
 
 #####################################################################
     tx = dm.GaussLobatto(num_segments=10, order=3, solve_segments=False,
@@ -248,7 +248,7 @@ if __name__ == '__main__':
                                ref=100)  # Constraint for the thrust magnitude
     
     # Link Phases (link time and all state variables)
-    traj.link_phases(phases=['phase0', 'phase1'], vars=['*','power','theta'])
+    # traj.link_phases(phases=['phase0', 'phase1'], vars=['*','power','theta'])
 
     # # Setup the driver
     p.driver = om.pyOptSparseDriver()
@@ -271,23 +271,23 @@ if __name__ == '__main__':
 
     p.setup()
 
-    p.set_val('traj.phase0.t_initial', 0.0)
-    p.set_val('traj.phase0.t_duration', 30)
-    p.set_val('traj.phase0.states:x', phase.interpolate(ys=[0, 900], nodes='state_input'))
-    p.set_val('traj.phase0.states:y', phase.interpolate(ys=[0.01, 300], nodes='state_input'))
-    p.set_val('traj.phase0.states:vx', phase.interpolate(ys=[0, 60], nodes='state_input'))
-    p.set_val('traj.phase0.states:vy', phase.interpolate(ys=[0.01, 10], nodes='state_input'))
-    p.set_val('traj.phase0.states:energy', phase.interpolate(ys=[0, 1E7], nodes='state_input'))
+    # p.set_val('traj.phase0.t_initial', 0.0)
+    # p.set_val('traj.phase0.t_duration', 30)
+    # p.set_val('traj.phase0.states:x', phase.interpolate(ys=[0, 900], nodes='state_input'))
+    # p.set_val('traj.phase0.states:y', phase.interpolate(ys=[0.01, 300], nodes='state_input'))
+    # p.set_val('traj.phase0.states:vx', phase.interpolate(ys=[0, 60], nodes='state_input'))
+    # p.set_val('traj.phase0.states:vy', phase.interpolate(ys=[0.01, 10], nodes='state_input'))
+    # p.set_val('traj.phase0.states:energy', phase.interpolate(ys=[0, 1E7], nodes='state_input'))
 
-    p.set_val('traj.phase0.controls:power', phase.interpolate(xs=np.linspace(0, 28.368, 500),
-                                                              ys=verify_data.powers.ravel(),
-                                                              nodes='control_input'))
-    p.set_val('traj.phase0.controls:theta', phase.interpolate(xs=np.linspace(0, 28.368, 500),
-                                                              ys=verify_data.thetas.ravel(),
-                                                              nodes='control_input'))
+    # p.set_val('traj.phase0.controls:power', phase.interpolate(xs=np.linspace(0, 28.368, 500),
+    #                                                           ys=verify_data.powers.ravel(),
+    #                                                           nodes='control_input'))
+    # p.set_val('traj.phase0.controls:theta', phase.interpolate(xs=np.linspace(0, 28.368, 500),
+    #                                                           ys=verify_data.thetas.ravel(),
+    #                                                           nodes='control_input'))
 
-    p.set_val('traj.phase0.controls:power', 200000.0)
-    p.set_val('traj.phase0.controls:theta', phase.interpolate(ys=[0.001, np.radians(85)], nodes='control_input'))
+    # p.set_val('traj.phase0.controls:power', 200000.0)
+    # p.set_val('traj.phase0.controls:theta', phase.interpolate(ys=[0.001, np.radians(85)], nodes='control_input'))
     
     p.set_val('traj.phase1.t_initial', 30.0)
     p.set_val('traj.phase1.t_duration', 30)
@@ -306,5 +306,5 @@ if __name__ == '__main__':
 
     p.set_val('traj.phase1.controls:power', 200000.0)
     p.set_val('traj.phase1.controls:theta', phase1.interpolate(ys=[np.radians(85), np.radians(90)], nodes='control_input'))
-    #dm.run_problem(p, run_driver=True, simulate=True)
+    dm.run_problem(p, run_driver=True, simulate=True)
     om.n2(p)
