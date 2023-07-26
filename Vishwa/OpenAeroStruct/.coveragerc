@@ -1,0 +1,8 @@
+[report]
+omit =
+    */openaerostruct/utils/plot_wing.py
+    */openaerostruct/utils/plot_wingbox.py
+    */tests/*
+    */docs/*
+exclude_lines =
+    pragma: no cover
