@@ -1,8 +1,4 @@
-# Simulating an eVTOL takeoff and transition with (and without Dymos)
 
-This problem falls into the [unsteady analysis][unsteady-class] class of optimization problems. 
-The first thing that needs to be done when addressing these class of problems is to 
-develop an ordinary differential equation that governs the dynamics. 
 
 In this problem, an ODE for the eVTOL aircraft was provided by Shamsheer Chuahan. 
 You can checkout the details in his paper [here](https://www.researchgate.net/publication/337259571_Tilt-Wing_eVTOL_Takeoff_Trajectory_Optimization). 
