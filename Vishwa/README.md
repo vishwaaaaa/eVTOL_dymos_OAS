@@ -1,9 +1,5 @@
 
 
-In this problem, an ODE for the eVTOL aircraft was provided by Shamsheer Chuahan. 
-You can checkout the details in his paper [here](https://www.researchgate.net/publication/337259571_Tilt-Wing_eVTOL_Takeoff_Trajectory_Optimization). 
-Shamsheer also provided his [original implementation](https://bitbucket.org/shamsheersc19/tilt_wing_evtol_takeoff), which included an Euler time integration built inside an OpenMDAO component. 
-
 
 # Shooting VS. Implicit Methods
 
